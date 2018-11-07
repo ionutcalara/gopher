@@ -1,0 +1,18 @@
+language: php
+
+dist: trusty
+
+php:
+  - 7.2
+
+before_script:
+  - cp .env.travis .env
+  - mysql -e 'create database homestead_test;'
+  - composer self-update
+  - composer install --no-interaction
+  - php artisan key:generate
+  - php artisan migrate
+  - php artisan db:seed --class=TestUsersTableSeeder
+
+script:
+  - vendor/bin/phpunit
