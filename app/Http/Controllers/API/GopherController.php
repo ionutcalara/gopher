@@ -27,7 +27,7 @@ class GopherController extends Controller {
 		$params  = $this->getParams( $request );
 
 		// call the command if this is direct
-		if ( config( 'commands.direct' ) ) {
+		if ( config( 'commands.direct' ) == 'direct' ) {
 			$exitCode = Artisan::call( $command, $params );
 
 			return Artisan::output();
