@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\CreatePodioItem;
+use App\Console\Commands\ForgeDeployAllSites;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -13,7 +14,8 @@ class Kernel extends ConsoleKernel {
 	 * @var array
 	 */
 	protected $commands = [
-		CreatePodioItem::class
+		CreatePodioItem::class,
+		ForgeDeployAllSites::class
 	];
 
 	/**
