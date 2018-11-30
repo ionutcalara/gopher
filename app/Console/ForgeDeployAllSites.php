@@ -2,12 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\DeployForgeSite;
 use Illuminate\Console\Command;
-use Podio;
-use PodioApp;
-use PodioDateItemField;
-use PodioItem;
-use PodioItemFieldCollection;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\Storage;
 use Themsaid\Forge\Forge;
 
 class ForgeDeployAllSites extends Command {
@@ -25,29 +24,33 @@ class ForgeDeployAllSites extends Command {
 	 */
 	protected $description = 'Deploy all forge sites';
 
+	/**
+	 * @var Filesystem
+	 */
+	protected $files;
 
 	/**
 	 *
 	 * @var Forge
 	 */
-	public $forge = null;
+	protected $forge = null;
 
 	/**
 	 *
 	 */
-	public $serverId = null;
+	protected $serverId = null;
 
 	/**
 	 * @var array
 	 */
-	public $sites = [];
+	protected $sites = [];
 
 	/**
 	 * Create a new command instance.
 	 *
 	 * @return void
 	 */
-	public function __construct() {
+	public function __construct( ) {
 		parent::__construct();
 		$this->forge = new Forge( config( 'forge.token' ) );
 		$this->forge->setTimeout( 300 );
@@ -74,12 +77,11 @@ class ForgeDeployAllSites extends Command {
 
 	/**
 	 *
+	 * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
 	 */
 	private function deploy() {
-		foreach ( $this->sites as $site ) {
-			echo 'Deploying ' . $site->name;
-			$this->forge->deploySite( $this->serverId, $site->id, true );
-		}
+		$this->saveSites();
+		dispatch(new DeployForgeSite());
 	}
 
 	/**
@@ -98,6 +100,13 @@ class ForgeDeployAllSites extends Command {
 		}
 
 		return $this;
+	}
+
+	/**
+	 *
+	 */
+	private function saveSites() {
+		Storage::disk('local')->put(  'forge-deploy-sites.json' , json_encode( $this->sites ) );
 	}
 
 
