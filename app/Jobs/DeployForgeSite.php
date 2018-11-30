@@ -50,8 +50,8 @@ class DeployForgeSite implements ShouldQueue {
 	 */
 	public function handle() {
 		$this->beforeHandle();
-		$this->forge->deploySite( $this->serverId, $this->sites[ $index ]['id'], true );
 		$site = array_pop( $this->sites );
+		$this->forge->deploySite( $this->serverId, $site['id'], true );
 		echo 'Deployed ' . $site['name'] . PHP_EOL;
 		$this->saveSites();
 		if ( count( $this->sites ) > 0 ) {
